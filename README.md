@@ -25,7 +25,6 @@
 + Ve výše uvedeném frameworku implementujte architekturu SLDR32. Můžete spolupracovat se skupinou pro SLDR16, protože implementace řadiče bude až na výjimky stejná.
 + Upravte veškerou dokumentaci pro SLDR32, včetně assembleru.
 
-// test Gitu pro starouše
 
 
  
