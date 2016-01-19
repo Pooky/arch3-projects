@@ -5,11 +5,15 @@
 + Stahněte si výše uvedený assembler pro SLDR, modifikujte soubor AsmSldr.java pro instrukční sadu akumulátorové architektury. Vytvořte soubor AsmSldAcc.java. Návod na úpravy je v README.txt assembleru.
 + Ve výše uvedeném Frameworku implementujte instrukční sadu z bodu 1.
 
+[Info](https://github.com/Pooky/arch3-projects/wiki/St%C5%99ada%C4%8Dov%C3%A1-architektura)
+
 ![střadač](https://raw.githubusercontent.com/Pooky/arch3-projects/master/stradac.png)
 
 # Registrová architektura SLDR16
 (Vojtěch Nedvěd, Michal Kuchta, Martin Klíma)
 + Vytvořte simulátor pro registrovou architekturu SLDR16 ze slidů předmětu. Instrukční sada je uvedena v tabulce.
+
+[Info](https://github.com/Pooky/arch3-projects/wiki/Registrov%C3%A1-architektura-SLDR16)
 
 ![sldr16](https://raw.githubusercontent.com/Pooky/arch3-projects/master/sldr16.png)
 
