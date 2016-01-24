@@ -16,50 +16,34 @@ package sldr32;
 
 import generic.Alu.AluOp;
 import generic.Microinstruction;
-/* výpis zkratek z registrové architektury
+/* výpis øídících signálù z registrové architektury
  * 
  * moe - implementováno
  * mwr - implementováno
  * psww - implementováno
- * pswmsk
- * psel
- * pswn
- * psw
- * dboe
- * rd
- * rm
- * m
- * regw
- * cin
- * src1
- * drm
- * drd
+ * psel - implementováno LP
+ * dboe - implementováno LP
+ * rd - implementováno LP
+ * rm - implementováno LP
+ * m - implementováno LP
+ * regw - implementováno LP
  * src1s - implementováno
  * src2s - implementováno
- * drn
- * rdsel
- * src2
+ * rdsel - implementováno LP
  * aluop - implementováno
- * aluo
- * aboe
+ * aboe - implementováno LP
  * asel - implementováno
- * pcas
- * pck
- * pca
- * ir
+ * pcas  - implementováno LP
  * irw - implementováno
- * extop
- * pcbs
- * pcb
- * pcin
- * pcwr
- * pc
+ * extop - implementováno LP
+ * pcbs  - implementováno LP
+ * pcwr - implementováno LP
  * */
 public class AccMicroinstr extends Microinstruction {
     AluOp aluop;
     int src1s;
     int src2s;
-    int k;    
+    int k; 
     boolean moe;
     boolean mwr;
     boolean doe;
@@ -70,6 +54,21 @@ public class AccMicroinstr extends Microinstruction {
     boolean irw;
     boolean psww;
     int pswsel;
+    
+    boolean dboe;
+    boolean regw;
+    boolean aboe;
+    boolean pcwr;
+    
+    boolean rd;
+    boolean rm;
+    boolean m;
+    boolean extop;
+    
+    int psel;
+    int rdsel;
+    int pcas;
+    int pcbs;
     
     public AccMicroinstr(
     Microinstruction.Condition cond,
@@ -87,6 +86,18 @@ public class AccMicroinstr extends Microinstruction {
     boolean pcw,
     boolean irw,
     boolean psww,
+    boolean dboe,
+    boolean regw,
+    boolean aboe,
+    boolean pcwr,
+    boolean rd,
+    boolean rm,
+    boolean m,
+    boolean extop,
+    int psel,
+    int rdsel,
+    int pcas,
+    int pcbs,
     int pswsel) {
         this.cond = cond;
         this.targetState = targetState;
@@ -104,6 +115,18 @@ public class AccMicroinstr extends Microinstruction {
         this.irw = irw;
         this.psww = psww;
         this.pswsel = pswsel;
+        this.dboe = dboe;
+        this.regw = regw;
+        this.aboe = aboe;
+        this.pcwr = pcwr;
+        this.rd = rd;
+        this.rm = rm;
+        this.m = m;
+        this.extop = extop;
+        this.psel = psel;
+        this.rdsel = rdsel;
+        this.pcas = pcas;
+        this.pcbs = pcbs;
     }
 
     AccMicroinstr() {
@@ -133,6 +156,18 @@ public class AccMicroinstr extends Microinstruction {
         irw = !token[idx++].equals("0");
         psww = !token[idx++].equals("0");
         pswsel = Integer.parseInt(token[idx++]);
+        dboe = !token[idx++].equals("0");
+        regw = !token[idx++].equals("0");
+        aboe = !token[idx++].equals("0");
+        pcwr = !token[idx++].equals("0");
+        rd = !token[idx++].equals("0");
+        rm = !token[idx++].equals("0");
+        m = !token[idx++].equals("0");
+        extop = !token[idx++].equals("0");
+        psel = Integer.parseInt(token[idx++]);
+        rdsel = Integer.parseInt(token[idx++]);
+        pcas = Integer.parseInt(token[idx++]);
+        pcbs = Integer.parseInt(token[idx++]);
         return state;
     } 
    
