@@ -16,7 +16,45 @@ package sldr32;
 
 import generic.Alu.AluOp;
 import generic.Microinstruction;
-
+/* výpis zkratek z registrové architektury
+ * 
+ * moe - implementováno
+ * mwr - implementováno
+ * psww - implementováno
+ * pswmsk
+ * psel
+ * pswn
+ * psw
+ * dboe
+ * rd
+ * rm
+ * m
+ * regw
+ * cin
+ * src1
+ * drm
+ * drd
+ * src1s - implementováno
+ * src2s - implementováno
+ * drn
+ * rdsel
+ * src2
+ * aluop - implementováno
+ * aluo
+ * aboe
+ * asel - implementováno
+ * pcas
+ * pck
+ * pca
+ * ir
+ * irw - implementováno
+ * extop
+ * pcbs
+ * pcb
+ * pcin
+ * pcwr
+ * pc
+ * */
 public class AccMicroinstr extends Microinstruction {
     AluOp aluop;
     int src1s;
