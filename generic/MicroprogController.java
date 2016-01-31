@@ -15,6 +15,9 @@
 package generic;
 
 import java.io.IOException;
+import java.util.Arrays;
+
+import components.registers.Reg16;
 
 /**
  *
@@ -25,7 +28,7 @@ public abstract class MicroprogController extends Controller {
     private int state = 0;
     private int tmp = 0;
     private Microcode microcode;
-    private PSW psw;
+    protected PSW psw;
     protected boolean halt;
 
     protected abstract void onLogic(Microinstruction m);
@@ -54,6 +57,9 @@ public abstract class MicroprogController extends Controller {
         }
     }
     public void clock() {
+    	System.out.println("ahoj");
+    	System.out.println(state);
+    	
         Microinstruction m = microcode.get(state);
         onLogic(m);
         onRisingClockEdge(m);
@@ -115,4 +121,6 @@ public abstract class MicroprogController extends Controller {
     public boolean isHalted() {
         return halt;
     }
+
+
 }

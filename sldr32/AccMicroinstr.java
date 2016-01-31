@@ -16,28 +16,28 @@ package sldr32;
 
 import generic.Alu.AluOp;
 import generic.Microinstruction;
-/* výpis øídících signálù z registrové architektury
+/* vï¿½pis ï¿½ï¿½dï¿½cï¿½ch signï¿½lï¿½ z registrovï¿½ architektury
  * 
- * moe - implementováno
- * mwr - implementováno
- * psww - implementováno
- * psel - implementováno LP
- * dboe - implementováno LP
- * rd - implementováno LP
- * rm - implementováno LP
- * m - implementováno LP
- * regw - implementováno LP
- * src1s - implementováno
- * src2s - implementováno
- * rdsel - implementováno LP
- * aluop - implementováno
- * aboe - implementováno LP
- * asel - implementováno
- * pcas  - implementováno LP
- * irw - implementováno
- * extop - implementováno LP
- * pcbs  - implementováno LP
- * pcwr - implementováno LP
+ * moe - implementovï¿½no
+ * mwr - implementovï¿½no
+ * psww - implementovï¿½no
+ * psel - implementovï¿½no LP
+ * dboe - implementovï¿½no LP
+ * rd - implementovï¿½no LP
+ * rm - implementovï¿½no LP
+ * m - implementovï¿½no LP
+ * regw - implementovï¿½no LP
+ * src1s - implementovï¿½no
+ * src2s - implementovï¿½no
+ * rdsel - implementovï¿½no LP
+ * aluop - implementovï¿½no
+ * aboe - implementovï¿½no LP
+ * asel - implementovï¿½no
+ * pcas  - implementovï¿½no LP
+ * irw - implementovï¿½no
+ * extop - implementovï¿½no LP
+ * pcbs  - implementovï¿½no LP
+ * pcwr - implementovï¿½no LP
  * */
 public class AccMicroinstr extends Microinstruction {
     AluOp aluop;
@@ -135,6 +135,10 @@ public class AccMicroinstr extends Microinstruction {
     
     public int parse(String line) {
         String[] token = line.split("  *");
+        
+        //System.out.println(token.toString());
+        //System.out.println(token.length);
+        
         int idx = 0;
         if (token[0].equals("")) {
             idx++;
@@ -168,6 +172,7 @@ public class AccMicroinstr extends Microinstruction {
         rdsel = Integer.parseInt(token[idx++]);
         pcas = Integer.parseInt(token[idx++]);
         pcbs = Integer.parseInt(token[idx++]);
+        
         return state;
     } 
    

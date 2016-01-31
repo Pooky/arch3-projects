@@ -22,7 +22,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AccSystem {
-
+	
+	private static Logger logger = Logger.getLogger(AccSystem.class.getName());
+	
     private final Memory16x16 mem;
     private final Bus16x16 systemBus;
     private final BasicIO16x16 io;
@@ -41,8 +43,16 @@ public class AccSystem {
     public static void main(String[] args) throws IOException {
         try {
             AccSystem system = new AccSystem();
-            system.mem.loadFromBinaryFile("prog.bin");
+            
+          	logger.info("-----------------------------------------");
+            logger.info("\t#### Starting system.... ####");
+            logger.info("Loading memory dump...");
+            
+            system.mem.loadFromBinaryFile("source.bin");
+            logger.info("Core run!");
             system.core.run();
+            
+            
         } catch (Exception ex) {
             Logger.getLogger(AccSystem.class.getName()).log(Level.SEVERE, null, ex);
         }
