@@ -60,8 +60,8 @@ public class AccMicroinstr extends Microinstruction {
     boolean aboe;
     boolean pcwr;
     
-    boolean rd;
-    boolean rm;
+    int rd;
+    int rm;
     boolean m;
     boolean extop;
     
@@ -69,6 +69,7 @@ public class AccMicroinstr extends Microinstruction {
     int rdsel;
     int pcas;
     int pcbs;
+	public int rn;
     
     public AccMicroinstr(
     Microinstruction.Condition cond,
@@ -90,8 +91,8 @@ public class AccMicroinstr extends Microinstruction {
     boolean regw,
     boolean aboe,
     boolean pcwr,
-    boolean rd,
-    boolean rm,
+    int rd, // adresa zápisu
+    int rm, // read m
     boolean m,
     boolean extop,
     int psel,
@@ -164,8 +165,8 @@ public class AccMicroinstr extends Microinstruction {
         regw = !token[idx++].equals("0");
         aboe = !token[idx++].equals("0");
         pcwr = !token[idx++].equals("0");
-        rd = !token[idx++].equals("0");
-        rm = !token[idx++].equals("0");
+        rd = Integer.parseInt(token[idx++])
+        rm = Integer.parseInt(token[idx++])
         m = !token[idx++].equals("0");
         extop = !token[idx++].equals("0");
         psel = Integer.parseInt(token[idx++]);

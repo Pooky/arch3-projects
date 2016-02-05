@@ -1,7 +1,12 @@
+/**
+ * Author M.K.
+ */
+
 package sldr32;
 
 import components.alus.Alu16;
 import components.busses.Bus16x16;
+import components.regfiles.RegFile16;
 import components.registers.Reg16;
 
 import generic.Microcode;
@@ -16,14 +21,17 @@ public class AccController extends MicroprogController {
     Bus16x16 systemBus;   
 	
     /* Data paths */
-    private short ab;
-    private short db;
+    private short ab; // adresová sběrnice
+    private short db; 
     private short aluo;
+    
+    private short drd;
 
     /* Registers */
     private Reg16 PC = new Reg16();
-    private Reg16 A = new Reg16();
     private Reg16 IR = new Reg16();
+    
+    private RegFile16 Register = new RegFile16(16);
 
     /* Functional Blocks */
     private final Alu16 alu = new Alu16();
@@ -32,9 +40,6 @@ public class AccController extends MicroprogController {
     
     public Reg16 getProgramCounter(){
     	return PC;
-    }
-    public Reg16 getA(){
-    	return A;
     }
     public Reg16 getIR(){
     	return IR;
@@ -58,72 +63,132 @@ public class AccController extends MicroprogController {
 		
         AccMicroinstr m = (AccMicroinstr) mi;
         short op1 = 0, op2 = 0;
+        short drm = 0;
+        short drn = 0;
+        short pca = 0;
+        short pcb = 0;
+        
+        
+        // adresová sběrnice
+        if(m.aboe){
+        	 if(m.asel == 0){
+        		 ab = PC.getQ();
+        	 }
+        	 if(m.asel == 1){
+        		 ab = IR.getQ();
+        	 }
+        	 if(m.asel == 2){
+        		 ab = aluo;
+        	 }
+        }
 
-        ab = (short) ((!m.aoe) ? 0xFFFF : (m.asel == 0) ? IR.getQ()
-                : (m.asel == 1) ? PC.getQ() : 0x10);
-
+        //ab = (short) ((!m.aoe) ? 0xFFFF : (m.asel == 0) ? IR.getQ() : (m.asel == 1) ? PC.getQ() : 0x10);
+        
+        // otevřený výstup z memory
         if (m.moe) {
+        	// otevřený výstup i z dboe = chyba
+            if (m.dboe) {
+                java.lang.System.out.printf(
+                        "Error: bus conflict on DB (moe and dboe active simultaneously)\n");
+                java.lang.System.exit(1);
+            }
             if (!m.aoe) {
                 java.lang.System.out.printf("Error: address bus in Z state\n");
                 java.lang.System.exit(1);
             }
-            if (m.doe) {
-                java.lang.System.out.printf(
-                        "Error: bus conflict on DB (moe and doe active simultaneously)\n");
-                java.lang.System.exit(1);
-            }
 
             try {
-                db = systemBus.read(ab, SystemBus.M_16);
+                db = systemBus.read(ab, SystemBus.M_16); // načtení dat na datovou sběrnici
             } catch (Exception ex) {
               System.out.println(ex.getMessage());
               System.exit(1);
             }
         }
 
+        // načtení prvního operandu
         switch (m.src1s) {
             case 0:
-                op1 = IR.getQ();
+                op1 = drm;
                 break;
             case 1:
-                op1 = db;
-                break;
-            case 2:
-                op1 = (short) m.k;
+                op1 = psw.output();
                 break;
         }
 
         switch (m.src2s) {
             case 0:
-                op2 = IR.getQ();
+                op2 = drn;
                 break;
             case 1:
-                op2 = PC.getQ();
+                op2 = IR.getQ(); // ignorujeme extender
                 break;
-            case 2:
-                op2 = A.getQ();
-                break;
-            case 3:
-                op2 = psw.output();
-                break;
+
         }
+        
         aluo = alu.exec(m.aluop, op1, op2, aluo, psw);
-
-        if (m.asel == 2 && m.aoe) {
-            ab = aluo;  
-            
+        
+        // pcas
+        switch(m.pcas){
+        	case 0:
+        		pca = 0;
+        		break;
+        	case 1:
+        		pca = db;
+        		break;
+        	case 2:
+        		pca = aluo;
+        		break;
+        	case 3:
+        		pca = IR.getQ(); // ignorujeme extender
+        		break;
+        }
+        // pcb
+        if(m.pcbs == 1){
+        	pcb = 1;
+        }else{
+        	pcb = 0;
+        }
+        
+        // PCIN
+        if(pca != 0 && pcb != 0){
+        	PC.setD(pca);
         }
 
-        if (m.doe) {
+        // register drd
+        switch (m.rdsel) {
+        	case 0:
+        		drd = db;
+        		break;
+        	case 1:
+        		drd = PC.getQ();
+        		break;
+        	case 2:
+        		drd = aluo;
+        		break;        		
+        } 
+        
+        // znovu po zpracování aluo?
+        if (m.asel == 2 && m.aboe) {
+            ab = aluo;  
+        }
+
+        if (m.dboe) {
             db = aluo;
         } else if (!m.moe) {
             db = (short) 0xFFFF;
         }
+        
+        if(m.dboe){
+        	db = drd;
+        }       
 
         // BUSes -> Registers
-        PC.setD(aluo);
+        
         IR.setD(db);
-        A.setD(aluo);
+
+        // register files
+        drm = Register.read(m.rm);
+        drn = Register.read(m.rn);
         
         if (getState() == 0) {
             print(true);
@@ -135,22 +200,26 @@ public class AccController extends MicroprogController {
 	/**
 	 * Při vzestupné hraně
 	 */
-	protected void onRisingClockEdge(Microinstruction m) {
+	protected void onRisingClockEdge(Microinstruction mi) {
 		
-        AccMicroinstr mi = (AccMicroinstr) getCurrentMicroinstruction();
-        if (mi.pcw) {
+		AccMicroinstr m = (AccMicroinstr) mi;
+		
+        if (m.pcw) {
             PC.clock();
         }
-        if (mi.irw) {
+        if (m.irw) {
             IR.clock();
         }
-        if (mi.psww) {
+        if (m.psww) {
             psw.clock();
         }
-        if (mi.aw) {
-            A.clock();
-        }
-        if (mi.mwr) {
+        
+        // zapsání do registru
+        if(m.regw){
+        	Register.write(m.rd, drd);
+        } 
+        // zapsání memory
+        if (m.mwr) {
             try {
                 systemBus.write(ab, db, SystemBus.M_16);
             } catch (Exception ex) {
@@ -240,11 +309,7 @@ public class AccController extends MicroprogController {
         } else {
             System.out.printf("%04X  ", PC.getQ());
         }
-        if (header) {
-            System.out.printf("A     ");
-        } else {
-            System.out.printf("%04X  ", A.getQ());
-        }
+
         if (header) {
             System.out.printf("IR    ");
         } else {
