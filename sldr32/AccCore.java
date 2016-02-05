@@ -39,10 +39,13 @@ public class AccCore extends Core {
 
     /* Microcode */
     String[] mc = new String[]{
-        // state  cond skip-to-state aluop src1s src2s k moe mwr doe aoe asel aw pcw irw psww pswsel dboe regw aboe pcwr rd rm m extop psel rdsel pcas pcbs
-        // IF
-        "  0      HALT             0   NOP     0     0 0   0   0   0   1   1   0   0   0    0      0    0    0    0    0  0  0 0     0    0     0    0    0",
-
+        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // IF instrukce fetch
+        "0      NEXT 2         NOP   0     0     0   0   0  0  0  0    0    1    1    0     0    0   0    0    0   ",
+        "1      NEXT 0         NOP   0     0     0   0   0  0  0  0    0    1    1    0     0    0   0    0    0   ",
+        // HALT
+        "2      HALT 0         NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   "
+    
     };
 
    

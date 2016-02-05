@@ -1,5 +1,5 @@
 /**
- * Author M.K.
+ * @Author M.K.
  */
 
 package sldr32;
@@ -92,10 +92,7 @@ public class AccController extends MicroprogController {
                         "Error: bus conflict on DB (moe and dboe active simultaneously)\n");
                 java.lang.System.exit(1);
             }
-            if (!m.aoe) {
-                java.lang.System.out.printf("Error: address bus in Z state\n");
-                java.lang.System.exit(1);
-            }
+
 
             try {
                 db = systemBus.read(ab, SystemBus.M_16); // načtení dat na datovou sběrnici
@@ -204,7 +201,7 @@ public class AccController extends MicroprogController {
 		
 		AccMicroinstr m = (AccMicroinstr) mi;
 		
-        if (m.pcw) {
+        if (m.pcwr) {
             PC.clock();
         }
         if (m.irw) {
@@ -286,7 +283,7 @@ public class AccController extends MicroprogController {
      * the processor.
      */
     void print(boolean header) {
-    	
+    	//state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
         AccMicroinstr m = (AccMicroinstr) this.getCurrentMicroinstruction();
 
         if (header) {
@@ -356,12 +353,6 @@ public class AccController extends MicroprogController {
             System.out.printf("%1d     ", m.src2s);
         }
         if (header) {
-            System.out.printf("k     ");
-        } else {
-            System.out.printf("%04X  ", m.k);
-        }
-
-        if (header) {
             System.out.printf("moe ");
         } else {
             System.out.printf("%d   ", (m.moe) ? 1 : 0);
@@ -372,30 +363,14 @@ public class AccController extends MicroprogController {
             System.out.printf("%d   ", (m.mwr) ? 1 : 0);
         }
         if (header) {
-            System.out.printf("doe ");
-        } else {
-            System.out.printf("%d   ", (m.doe) ? 1 : 0);
-        }
-        if (header) {
-            System.out.printf("aoe ");
-        } else {
-            System.out.printf("%d   ", (m.aoe) ? 1 : 0);
-        }
-        if (header) {
             System.out.printf("asel ");
         } else {
             System.out.printf("%d    ", m.asel);
         }
         if (header) {
-            System.out.printf("aw ");
+            System.out.printf("pcwr    ");
         } else {
-            System.out.printf("%d  ", (m.aw) ? 1 : 0);
-        }
-
-        if (header) {
-            System.out.printf("pcw    ");
-        } else {
-            System.out.printf("%d      ", (m.pcw) ? 1 : 0);
+            System.out.printf("%d      ", (m.pcwr) ? 1 : 0);
         }
         if (header) {
             System.out.printf("irw    ");
@@ -406,11 +381,6 @@ public class AccController extends MicroprogController {
             System.out.printf("psww   ");
         } else {
             System.out.printf("%d      ", (m.psww) ? 1 : 0);
-        }
-        if (header) {
-            System.out.printf("pswsel ");
-        } else {
-            System.out.printf("%d      ", m.pswsel);
         }
         System.out.println();
     }	
