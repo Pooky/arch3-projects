@@ -12,7 +12,7 @@
  *
  *****************************************************************************
  */
-package sldr32;
+package register16;
 
 import java.util.logging.Logger;
 
@@ -23,8 +23,6 @@ import generic.SystemBus;
 import generic.MicroprogController;
 import generic.Core;
 import generic.Microinstruction;
-
-
 
 public class AccCore extends Core {
 	   
@@ -40,24 +38,34 @@ public class AccCore extends Core {
     /* Microcode */
     String[] mc = new String[]{
         // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
-        // IF instrukce fetch
-        "0      NEXT 2         NOP   0     0     0   0   0  0  0  0    0    1    1    0     0    0   0    0    0   ",
-        "1      NEXT 0         NOP   0     0     0   0   0  0  0  0    0    1    1    0     0    0   0    0    0   ",
+        // IF nacpání do adresové sběrnice
+        "0  NEXT            0    NOP   0     0     0   0   0  0  0  0    0    1    1    0     1    0   0    0    1  ",
+        // vložení do IR
+        "1  NEXT            0    NOP   0     0     1   0   0  0  0  0    0    0    0    0     0    1   0    0    0   ",
+        // zvýšení program counteru
+        "2  NEXT            0    NOP   0     0     0   0   0  0  0  0    1    0    0    1     1    0   0    1    1   ",
+        "3  SKIP_BY_DECODER 0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   ",
+        //// ADD rd, rn //////////////////////////////////////////////////////////////////////////////  
+        // Execute
+        "8  NEXT            0    ADD   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   ",
+        // WRITE BACK
+        "9  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0   ",
+        // Increase counter AND SKIP
+        "10  SKIP           0    NOP   0     0     0   0   0  0  0  0    1    0    0    1     1    0   0    1    1   ",
         // HALT
-        "2      HALT 0         NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   "
+        "10  HALT           0   NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   "
     
     };
 
    
     AccCore(Bus16x16 systemBus) {
-    	this();
         this.systemBus = systemBus;
-        
+    	this.microcode = new AccMicrocode(mc);
+    	this.controller = new AccController(microcode, new AccPSW(), systemBus);   	
     }
 
     AccCore() {
-    	this.microcode = new AccMicrocode(mc);
-    	this.controller = new AccController(microcode, new AccPSW(), systemBus);   	
+
     }
 
 
@@ -82,11 +90,11 @@ public class AccCore extends Core {
 
     @Override
     public void run() {
+    	
     	logger.info("Running...");
         while (!isHalted()) {
-        	logger.info("Clock (bíp)");
+        	//logger.info("Clock (bíp)");
         	clock();
-            
         }
         logger.info("Everything done. I quit!");
     }

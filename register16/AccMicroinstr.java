@@ -12,7 +12,7 @@
  *
  *****************************************************************************
  */
-package sldr32;
+package register16;
 
 import java.util.Arrays;
 
@@ -58,9 +58,9 @@ public class AccMicroinstr extends Microinstruction {
     boolean aboe;
     boolean pcwr;
     
-    int rd;
-    int rm;
-	public int rn;
+    boolean rd;
+    boolean rm;
+	boolean rn;
     
     int rdsel;
     int pcas;
@@ -73,7 +73,7 @@ public class AccMicroinstr extends Microinstruction {
     AluOp aluop,
     int src1s,
     int src2s,
-    int k,    
+ 
     boolean moe,
     boolean mwr,
     boolean doe,
@@ -87,8 +87,8 @@ public class AccMicroinstr extends Microinstruction {
     boolean regw,
     boolean aboe,
     boolean pcwr,
-    int rd, // adresa zápisu
-    int rm, // read m
+    int rd,
+    int rm,
     boolean m,
     boolean extop,
     int psel,
@@ -110,8 +110,6 @@ public class AccMicroinstr extends Microinstruction {
         this.regw = regw;
         this.aboe = aboe;
         this.pcwr = pcwr;
-        this.rd = rd;
-        this.rm = rm;
         this.rm = rn;
         this.rdsel = rdsel;
         this.pcas = pcas;
@@ -141,9 +139,9 @@ public class AccMicroinstr extends Microinstruction {
         src2s = Integer.parseInt(token[idx++]);
         moe = !token[idx++].equals("0");
         mwr = !token[idx++].equals("0");
-        rd = Integer.parseInt(token[idx++]);
-        rm = Integer.parseInt(token[idx++]);
-        rn = Integer.parseInt(token[idx++]);
+        rd = !token[idx++].equals("0");
+        rm = !token[idx++].equals("0");
+        rn = !token[idx++].equals("0");
         regw = !token[idx++].equals("0");
         dboe = !token[idx++].equals("0");
         aboe = !token[idx++].equals("0");

@@ -2,13 +2,16 @@
  * @Author M.K.
  */
 
-package sldr32;
+package register16;
+
+import java.util.logging.Logger;
 
 import components.alus.Alu16;
 import components.busses.Bus16x16;
 import components.regfiles.RegFile16;
 import components.registers.Reg16;
 
+import generic.Alu.AluOp;
 import generic.Microcode;
 import generic.Microinstruction;
 import generic.MicroprogController;
@@ -20,6 +23,8 @@ public class AccController extends MicroprogController {
 	/* Busses */
     Bus16x16 systemBus;   
 	
+    private static Logger logger = Logger.getLogger(AccController.class.getName());
+    
     /* Data paths */
     private short ab; // adresová sběrnice
     private short db; 
@@ -52,10 +57,14 @@ public class AccController extends MicroprogController {
      */
 	public AccController(Microcode microcode, PSW psw, Bus16x16 systemBus) {
 		super(microcode, psw);
-		
 		this.systemBus = systemBus;
-		
 		// TODO Auto-generated constructor stub
+		// test
+		Register.write(0, (short)15);
+		Register.write(1, (short)2);
+		PC.setD((short)1);
+		PC.clock();
+		
 	}
 
 	@Override
@@ -67,6 +76,7 @@ public class AccController extends MicroprogController {
         short drn = 0;
         short pca = 0;
         short pcb = 0;
+        short pcin = 0;
         
         
         // adresová sběrnice
@@ -81,7 +91,10 @@ public class AccController extends MicroprogController {
         		 ab = aluo;
         	 }
         }
-
+        // register files
+        drm = Register.read(0);
+        drn = Register.read(1);
+        
         //ab = (short) ((!m.aoe) ? 0xFFFF : (m.asel == 0) ? IR.getQ() : (m.asel == 1) ? PC.getQ() : 0x10);
         
         // otevřený výstup z memory
@@ -98,10 +111,22 @@ public class AccController extends MicroprogController {
                 db = systemBus.read(ab, SystemBus.M_16); // načtení dat na datovou sběrnici
             } catch (Exception ex) {
               System.out.println(ex.getMessage());
+              System.out.println(ab);
               System.exit(1);
             }
         }
-
+        // register drd
+        switch (m.rdsel) {
+        	case 0:
+        		drd = db;
+        		break;
+        	case 1:
+        		drd = PC.getQ();
+        		break;
+        	case 2:
+        		drd = aluo;
+        		break;        		
+        } 
         // načtení prvního operandu
         switch (m.src1s) {
             case 0:
@@ -121,8 +146,20 @@ public class AccController extends MicroprogController {
                 break;
 
         }
-        
+        //System.out.println(op1);
+
         aluo = alu.exec(m.aluop, op1, op2, aluo, psw);
+        //System.out.println(aluo);
+
+        if (m.dboe) {
+            db = aluo;
+        } else if (!m.moe) {
+            db = (short) 0xFFFF;
+        }
+        
+        if(m.dboe){
+        	db = drd;
+        }  
         
         // pcas
         switch(m.pcas){
@@ -141,51 +178,23 @@ public class AccController extends MicroprogController {
         }
         // pcb
         if(m.pcbs == 1){
-        	pcb = 1;
+        	pcb = PC.getQ();
         }else{
         	pcb = 0;
         }
-        
+        //System.out.println(pcb);
         // PCIN
-        if(pca != 0 && pcb != 0){
-        	PC.setD(pca);
-        }
-
-        // register drd
-        switch (m.rdsel) {
-        	case 0:
-        		drd = db;
-        		break;
-        	case 1:
-        		drd = PC.getQ();
-        		break;
-        	case 2:
-        		drd = aluo;
-        		break;        		
-        } 
-        
+        pcin = (short)(pca + pcb);
+        //System.out.println(pcin);
         // znovu po zpracování aluo?
         if (m.asel == 2 && m.aboe) {
             ab = aluo;  
         }
-
-        if (m.dboe) {
-            db = aluo;
-        } else if (!m.moe) {
-            db = (short) 0xFFFF;
-        }
-        
-        if(m.dboe){
-        	db = drd;
-        }       
+     
 
         // BUSes -> Registers
-        
         IR.setD(db);
-
-        // register files
-        drm = Register.read(m.rm);
-        drn = Register.read(m.rn);
+        PC.setD(pcin);
         
         if (getState() == 0) {
             print(true);
@@ -213,7 +222,15 @@ public class AccController extends MicroprogController {
         
         // zapsání do registru
         if(m.regw){
-        	Register.write(m.rd, drd);
+        	if(m.rd){
+        		Register.write(0, drd); 
+        	}
+        	if(m.rm){
+        		Register.write(1, drd);
+        	}
+        	if(m.rn){
+        		Register.write(2, drd);
+        	}
         } 
         // zapsání memory
         if (m.mwr) {
@@ -230,14 +247,16 @@ public class AccController extends MicroprogController {
 	@Override
 	protected int onDecodeInstruction() {
 		
+		java.lang.System.out.printf("Instruction code [%04x]\n", (int) IR.getQ());
+		
 		// vezmeme pamět z instrukce (? co je to & 0xFFFF)
 	    switch (((int) IR.getQ() & 0xFFFF)) {
 	        // NOP
 	        case 0x0000: 
 	            return 3; // instrukce začíná na 3 řádku
-	        // JMP
+	        // ADD rd, rn
 	        case 0x4000:
-	            return 10; // instrukce začíná na 10 řádku
+	            return 8; // instrukce začíná na 10 řádku
 	        // LDA        
 	        case 0x8000:
 	            return 15;
@@ -254,8 +273,8 @@ public class AccController extends MicroprogController {
 	            java.lang.System.out.printf("Error: unknown instruction code [%04x]\n", (int) IR.getQ());
 	            java.lang.System.exit(1);
 	    }
+	    
 	    return 0;
-
 	}
 
 	@Override
@@ -341,6 +360,26 @@ public class AccController extends MicroprogController {
             System.out.printf("aluop  ");
         } else {
             System.out.printf("%-5s  ", m.aluop.toString());
+        }
+        if (header) {
+            System.out.printf("rm \t");
+        } else {
+            System.out.printf("%1d \t", Register.read(0));
+        }
+        if (header) {
+            System.out.printf("rn \t");
+        } else {
+            System.out.printf("%1d \t", Register.read(1));
+        }
+        if (header) {
+            System.out.printf("rd \t");
+        } else {
+            System.out.printf("%1d \t", Register.read(2));
+        }
+        if (header) {
+            System.out.printf("drd \t");
+        } else {
+            System.out.printf("%1d ", drd);
         }
         if (header) {
             System.out.printf("src1s ");

@@ -12,7 +12,7 @@
  *
  *****************************************************************************
  */
-package sldr32;
+package register16;
 
 import components.busses.Bus16x16;
 import components.memories.Memory16x16;
@@ -48,7 +48,7 @@ public class AccSystem {
             logger.info("\t#### Starting system.... ####");
             logger.info("Loading memory dump...");
             
-            system.mem.loadFromBinaryFile("source.bin");
+            system.mem.loadFromBinaryFile("output.bin");
             logger.info("Core run!");
             system.core.run();
             

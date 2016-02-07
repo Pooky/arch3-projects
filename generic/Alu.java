@@ -119,7 +119,7 @@ public class Alu {
                 psw.setFlag(PSW.Flags.FLAG_V, ((f & m1) != 0) != ((f & m2) != 0));
                 psw.setFlag(PSW.Flags.FLAG_HC, (f & m3) != 0);
                 break;
-            case SUBBR: { // SUBBR
+            case SUBBR:  // SUBBR
                 long c = (psw.getFlag(PSW.Flags.FLAG_C)) ? 0 : 1;
                 r = (short) (src2 - src1 + c - 1);
                 f = (short) ((src1 & src2) | (src1 & ~r)
@@ -127,8 +127,7 @@ public class Alu {
                 psw.setFlag(PSW.Flags.FLAG_C, (f & m1) != 0);
                 psw.setFlag(PSW.Flags.FLAG_V, ((f & m1) != 0) != ((f & m2) != 0));
                 psw.setFlag(PSW.Flags.FLAG_HC, (f & m3) != 0);
-            }
-            break;
+                break;
             case CPL: // CPL
                 r = (short) ~src1;
                 break;

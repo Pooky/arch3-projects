@@ -192,7 +192,7 @@ public class AccCore extends Core {
                     op2 = A.getQ();
                     break;
                 case 3:
-                    op2 = psw.output();
+                    //op2 = psw.output();
                     break;
             }
             aluo = alu.exec(m.aluop, op1, op2, aluo, psw);
@@ -229,7 +229,7 @@ public class AccCore extends Core {
                 IR.clock();
             }
             if (mi.psww) {
-                psw.clock();
+                //psw.clock();
             }
             if (mi.aw) {
                 A.clock();

@@ -12,7 +12,7 @@
  *
  *****************************************************************************
  */
-package sldr32;
+package register16;
 
 import generic.Microcode;
 import generic.Microinstruction;

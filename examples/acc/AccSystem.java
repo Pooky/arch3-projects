@@ -41,7 +41,7 @@ public class AccSystem {
     public static void main(String[] args) throws IOException {
         try {
             AccSystem system = new AccSystem();
-            system.mem.loadFromBinaryFile("prog.bin");
+            system.mem.loadFromBinaryFile("output.bin");
             system.core.run();
         } catch (Exception ex) {
             Logger.getLogger(AccSystem.class.getName()).log(Level.SEVERE, null, ex);

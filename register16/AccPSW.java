@@ -12,7 +12,7 @@
  *
  *****************************************************************************
  */
-package sldr32;
+package register16;
 
 import components.registers.Reg16;
 import generic.PSW;

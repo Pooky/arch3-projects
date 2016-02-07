@@ -16,6 +16,9 @@ package generic;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Logger;
+
+import register16.AccSystem;
 
 import components.registers.Reg16;
 
@@ -30,6 +33,8 @@ public abstract class MicroprogController extends Controller {
     private Microcode microcode;
     protected PSW psw;
     protected boolean halt;
+    
+    private static Logger logger = Logger.getLogger(MicroprogController.class.getName());
 
     protected abstract void onLogic(Microinstruction m);
 
@@ -57,10 +62,26 @@ public abstract class MicroprogController extends Controller {
         }
     }
     public void clock() {
-    	System.out.println("ahoj");
-    	System.out.println(state);
+   	
+    	Microinstruction m = null;
     	
-        Microinstruction m = microcode.get(state);
+    	if(state >= microcode.size()){
+    		logger.warning("NEXT STATE: " + state + ". No more instructions. I QUIT!");
+    		System.exit(1);
+    	}
+    	
+    	try{
+    		m = microcode.get(state);
+    	}catch(ArrayIndexOutOfBoundsException exception){
+    		logger.warning("No more instructions. I QUIT!");
+    		System.exit(1);
+    	}
+    	if(m == null){
+    		logger.warning("Microinstruction is null.");
+    		System.exit(1);
+    	}
+    	
+        
         onLogic(m);
         onRisingClockEdge(m);
         switch (m.cond) {
