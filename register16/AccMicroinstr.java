@@ -58,9 +58,9 @@ public class AccMicroinstr extends Microinstruction {
     boolean aboe;
     boolean pcwr;
     
-    boolean rd;
-    boolean rm;
-	boolean rn;
+    int rd;
+    int rm;
+	int rn;
     
     int rdsel;
     int pcas;
@@ -139,9 +139,9 @@ public class AccMicroinstr extends Microinstruction {
         src2s = Integer.parseInt(token[idx++]);
         moe = !token[idx++].equals("0");
         mwr = !token[idx++].equals("0");
-        rd = !token[idx++].equals("0");
-        rm = !token[idx++].equals("0");
-        rn = !token[idx++].equals("0");
+        rd = Integer.parseInt(token[idx++]); 
+        rm = Integer.parseInt(token[idx++]); 
+        rn = Integer.parseInt(token[idx++]); 
         regw = !token[idx++].equals("0");
         dboe = !token[idx++].equals("0");
         aboe = !token[idx++].equals("0");

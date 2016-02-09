@@ -47,7 +47,7 @@ public class AccCore extends Core {
         "3  SKIP_BY_DECODER 0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   ",
         //// ADD rd, rn //////////////////////////////////////////////////////////////////////////////  
         // Execute
-        "8  NEXT            0    ADD   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   ",
+        "8  NEXT            0    ADD   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0   ",
         // WRITE BACK
         "9  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0   ",
         // Increase counter AND SKIP

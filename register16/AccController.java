@@ -60,10 +60,10 @@ public class AccController extends MicroprogController {
 		this.systemBus = systemBus;
 		// TODO Auto-generated constructor stub
 		// test
-		Register.write(0, (short)15);
-		Register.write(1, (short)2);
-		PC.setD((short)1);
-		PC.clock();
+		Register.write(1, (short)15);
+		Register.write(2, (short)2);
+		//PC.setD((short)1);
+		//PC.clock();
 		
 	}
 
@@ -92,8 +92,8 @@ public class AccController extends MicroprogController {
         	 }
         }
         // register files
-        drm = Register.read(0);
-        drn = Register.read(1);
+        drm = Register.read(m.rm);
+        drn = Register.read(m.rn);
         
         //ab = (short) ((!m.aoe) ? 0xFFFF : (m.asel == 0) ? IR.getQ() : (m.asel == 1) ? PC.getQ() : 0x10);
         
@@ -164,7 +164,7 @@ public class AccController extends MicroprogController {
         // pcas
         switch(m.pcas){
         	case 0:
-        		pca = 0;
+        		pca = 2; // konstanta
         		break;
         	case 1:
         		pca = db;
@@ -222,15 +222,7 @@ public class AccController extends MicroprogController {
         
         // zapsání do registru
         if(m.regw){
-        	if(m.rd){
-        		Register.write(0, drd); 
-        	}
-        	if(m.rm){
-        		Register.write(1, drd);
-        	}
-        	if(m.rn){
-        		Register.write(2, drd);
-        	}
+        	Register.write(m.rd, drd);
         } 
         // zapsání memory
         if (m.mwr) {
@@ -362,20 +354,20 @@ public class AccController extends MicroprogController {
             System.out.printf("%-5s  ", m.aluop.toString());
         }
         if (header) {
-            System.out.printf("rm \t");
-        } else {
-            System.out.printf("%1d \t", Register.read(0));
-        }
-        if (header) {
-            System.out.printf("rn \t");
+            System.out.printf("r1 \t");
         } else {
             System.out.printf("%1d \t", Register.read(1));
         }
         if (header) {
-            System.out.printf("rd \t");
+            System.out.printf("r2 \t");
         } else {
             System.out.printf("%1d \t", Register.read(2));
         }
+        /*if (header) {
+            System.out.printf("r \t");
+        } else {
+            System.out.printf("%1d \t", Register.read(2));
+        }*/
         if (header) {
             System.out.printf("drd \t");
         } else {
@@ -424,4 +416,11 @@ public class AccController extends MicroprogController {
         System.out.println();
     }	
 
+    public short extender(short instruction, int extop){
+    	
+    	// TODO
+    	
+		return instruction;
+    	
+    }
 }
