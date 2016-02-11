@@ -20,7 +20,7 @@ import generic.PSW;
 
 public class Alu32 extends Alu{
     
-   public int exec(AluOp op, byte src1, byte src2, byte dest, PSW psw) {
+   public int exec(AluOp op, int src1, int src2, int dest, PSW psw) {
         return (int) Alu.exec(32, op, (long) src1, (long) src2, psw);
     }
 }

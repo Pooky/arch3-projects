@@ -12,7 +12,7 @@
  *
  *****************************************************************************
  */
-package str_arch;
+package register32;
 
 import generic.Microcode;
 import generic.Microinstruction;

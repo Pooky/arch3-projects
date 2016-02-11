@@ -20,7 +20,7 @@ public class Reg32 extends Reg {
         return out;
     }
     
-    public void setD(byte input) {
+    public void setD(int input) {
         in = input;
     }
     

@@ -48,7 +48,7 @@ public class AccSystem {
             logger.info("\t#### Starting system.... ####");
             logger.info("Loading memory dump...");
             
-            system.mem.loadFromBinaryFile("output.bin");
+            system.mem.loadFromBinaryFile("C://Users//Knot//workspace//arch//bin//output.bin");
             logger.info("Core run!");
             system.core.run();
             

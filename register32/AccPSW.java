@@ -12,14 +12,17 @@
  *
  *****************************************************************************
  */
-package str_arch;
+package register32;
 
-import components.registers.Reg16;
+import components.registers.Reg32;
 import generic.PSW;
 import generic.Reg;
 
 public class AccPSW extends Reg implements PSW {
 
+	// singleton
+	private static AccPSW instance = null;
+	
     /* PSW FLAG CONSTANTS */
     public static final int FLAG_Z = 0x0000001;
     public static final int FLAG_C = 0x0000002;
@@ -30,6 +33,15 @@ public class AccPSW extends Reg implements PSW {
 
     private short flagsIn;
     private short flagsOut;
+
+    public static AccPSW getInstance() {
+    	
+        if(instance == null) {
+           instance = new AccPSW();
+        }
+        return instance;
+        
+     }
     
     @Override
     public void clear() {
