@@ -1,5 +1,6 @@
 @2 ; two byte data entities
 :00000000       4000 0400 ; JMP 0x0400
+:00000002       5000 0000 ; 
 :00000004       C001 0000 ; interrupt entry point (dummy RET)
 :00000008       0000 0000 ; R1:R0
                 0000 0000 ; R3:R2

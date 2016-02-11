@@ -239,28 +239,47 @@ public class AccController extends MicroprogController {
 	@Override
 	protected int onDecodeInstruction() {
 		
-		java.lang.System.out.printf("Instruction code [%04x]\n", (int) IR.getQ());
-		
+		java.lang.System.out.printf("Instruction code [%04x]\n", (short) IR.getQ());
+            
 		// vezmeme pamět z instrukce (? co je to & 0xFFFF)
-	    switch (((int) IR.getQ() & 0xFFFF)) {
-	        // NOP
-	        case 0x0000: 
-	            return 3; // instrukce začíná na 3 řádku
-	        // ADD rd, rn
-	        case 0x4000:
-	            return 8; // instrukce začíná na 10 řádku
-	        // LDA        
-	        case 0x8000:
-	            return 15;
-	        // ADD        
-	        case 0x0200:
-	            return 20;
-	        // CALL        
-	        case 0xc000:
-	            return 25;
-	        // RET
-	        case 0xc001:
-	            return 35;
+	    switch (((short) IR.getQ() & 0xF0F0)) { // return = instrukce začíná na X řádku
+                //case 0b0100_0000_0000_0000: // 4000 to match the first instr in output.bin
+                
+                // NOP
+	        case 0b0000_0000_0000_0000: // real 0000 0000 0000 0000
+	            return 2; 
+                    
+                // ADD rd, rn
+                    case 0b0101_0000_0000_0000:
+                //case 0b0000_0000_0010_0000: // real 0000 dddd 0010 nnnn
+	            return 3;
+                    
+                // SUB rd, rn
+                case 0b0000_0000_0100_0000: // real 0000 dddd 0010 nnnn
+	            return 6;
+                
+                // HALT
+                case 0b1111_0000_1111_0000: // real 1111 1111 1111 1111
+	            return 9;
+                   
+                // NEG rd, rn
+                    case 0b0100_0000_0000_0000:
+                //case 0b0000_0000_0001_0000: // real 0000 dddd 0001 nnnn
+	            return 10;
+                    
+//	        
+//	        // LDA        
+//	        case 0x8000:
+//	            return 15;
+//	        // ADD        
+//	        case 0x0200:
+//	            return 20;
+//	        // CALL        
+//	        case 0xc000:
+//	            return 25;
+//	        // RET
+//	        case 0xc001:
+//	            return 35;
 	        default:
 	            java.lang.System.out.printf("Error: unknown instruction code [%04x]\n", (int) IR.getQ());
 	            java.lang.System.exit(1);
@@ -417,8 +436,54 @@ public class AccController extends MicroprogController {
     }	
 
     public short extender(short instruction, int extop){
-    	
-    	// TODO
+    	short tmp;
+    	switch (extop){
+            case 0b000: // xxxxxxxxxxxxuuuu -> 000000000000uuuu
+                tmp = (short)(instruction & 0b0000_0000_0000_1111);
+                return tmp;
+                
+            case 0b001: // xxxxxxxxxxxsvvvv -> ssssssssssssvvvv
+                tmp = (short) (instruction & 0b0000_0000_0001_1111);
+                tmp = (short) (tmp << 11);
+                tmp = (short) (tmp >> 11);
+                return tmp;
+                
+            case 0b010: // xxxxxxxxxxsvvvvv -> sssssssssssvvvvv
+                tmp = (short) (instruction & 0b0000_0000_0011_1111);
+                tmp = (short) (tmp << 10);
+                tmp = (short) (tmp >> 10);
+                return tmp;
+                
+            case 0b011: // xxxxxxxxsvvvvvvv -> sssssssssvvvvvvv
+                tmp = (short) (instruction & 0b0000_0000_1111_1111);
+                tmp = (short) (tmp << 8);
+                tmp = (short) (tmp >> 8);
+                return tmp;
+                
+            case 0b100: // xxxxxxxxuuuuuuuu -> 0000000uuuuuuuu0
+                tmp = (short) (instruction & 0b0000_0000_1111_1111);
+                tmp = (short) (tmp << 1);
+                return tmp;
+                
+            case 0b101: // xxxxxxxxsvvvvvvv -> ssssssssvvvvvvv0
+                tmp = (short) (instruction & 0b0000_0000_1111_1111);
+                tmp = (short) (tmp << 8);
+                tmp = (short) (tmp >> 8);
+                tmp = (short) (tmp << 1);
+                return tmp;
+                
+            case 0b110: // xxxxuuuuuuuuuuuu -> 000uuuuuuuuuuuu0
+                tmp = (short) (instruction & 0b0000_1111_1111_1111);
+                tmp = (short) (tmp << 1);
+                return tmp;
+                
+            case 0b111: // xxxxsvvvvvvvvvvv -> ssssvvvvvvvvvvv0
+                tmp = (short) (instruction & 0b0000_1111_1111_1111);
+                tmp = (short) (tmp << 4);
+                tmp = (short) (tmp >> 4);
+                tmp = (short) (tmp << 1);
+                return tmp;
+        }
     	
 		return instruction;
     	

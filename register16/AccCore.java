@@ -38,23 +38,46 @@ public class AccCore extends Core {
     /* Microcode */
     String[] mc = new String[]{
         // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
-        // IF nacpání do adresové sběrnice
-        "0  NEXT            0    NOP   0     0     0   0   0  0  0  0    0    1    1    0     1    0   0    0    1  ",
-        // vložení do IR
-        "1  NEXT            0    NOP   0     0     1   0   0  0  0  0    0    0    0    0     0    1   0    0    0   ",
-        // zvýšení program counteru
-        "2  NEXT            0    NOP   0     0     0   0   0  0  0  0    1    0    0    1     1    0   0    1    1   ",
-        "3  SKIP_BY_DECODER 0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   ",
-        //// ADD rd, rn //////////////////////////////////////////////////////////////////////////////  
-        // Execute
-        "8  NEXT            0    ADD   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0   ",
-        // WRITE BACK
-        "9  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0   ",
-        // Increase counter AND SKIP
-        "10  SKIP           0    NOP   0     0     0   0   0  0  0  0    1    0    0    1     1    0   0    1    1   ",
-        // HALT
-        "10  HALT           0   NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0   "
+        // IF + ID
+        "0  NEXT            0    NOP   0     0     1   0   0  0  0  0    0    1    1    0     0    1   0    0    0",
+        "1  SKIP_BY_DECODER 0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0",
+        
+        //// NOP //////////////////////////////////////////////////////////////////////////////  
+        // EX        
+        // WB
+        // PC++ AND SKIP
+        "2  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+                
+        
+        //ADD rd, rn //////////////////////////////////////////////////////////////////////////////  
+        // EX        
+        "3  NEXT            0    ADD   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
+        // WB
+        "4  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
+        // PC++ AND SKIP
+        "5  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        
+        
+        //SUB rd, rn //////////////////////////////////////////////////////////////////////////////  
+        // EX        
+        "6  NEXT            0    SUB   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
+        // WB
+        "7  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
+        // PC++ AND SKIP
+        "8  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        
+        // HALT //////////////////////////////////////////////////////////////////////////////  
+        "9  HALT           0   NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0",
+            
+        //NEG rd, rn //////////////////////////////////////////////////////////////////////////////  
+        // EX        
+        "10  NEXT            0    NEG   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
+        // WB
+        "11  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
+        // PC++ AND SKIP
+        "12  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
     
+            
     };
 
    
