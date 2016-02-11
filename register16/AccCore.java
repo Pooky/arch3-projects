@@ -71,11 +71,61 @@ public class AccCore extends Core {
             
         //NEG rd, rn //////////////////////////////////////////////////////////////////////////////  
         // EX        
-        "10  NEXT            0    NEG   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
+        "10  NEXT            0    NEG   0     0     0   0   0  2  0  0    0    0    0    0     0    0   0    0    0",
         // WB
         "11  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         // PC++ AND SKIP
         "12  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        
+        //AND rd, rn //////////////////////////////////////////////////////////////////////////////  
+        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // EX        
+        "13  NEXT            0    AND   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
+        // WB
+        "14  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
+        // PC++ AND SKIP
+        "15  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        
+        //OR rd, rn //////////////////////////////////////////////////////////////////////////////  
+        // EX        
+        "16  NEXT            0    OR   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
+        // WB
+        "17  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
+        // PC++ AND SKIP
+        "18  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        
+        //XOR rd, rn //////////////////////////////////////////////////////////////////////////////  
+        // EX        
+        "19  NEXT            0    XOR   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
+        // WB
+        "20  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
+        // PC++ AND SKIP
+        "21  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        
+        //NOT rd, rn //////////////////////////////////////////////////////////////////////////////  
+        // EX        
+        "22  NEXT            0    CPL   0     0     0   0   0  2  0  0    0    0    0    0     0    0   0    0    0",
+        // WB
+        "23  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
+        // PC++ AND SKIP
+        "24  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        
+        //JMP [rn] //////////////////////////////////////////////////////////////////////////////  
+        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // EX + WB        
+        "25  SKIP            0    SRC2   0     0     0   0   0  0  1  0    0    0    0    0     1    0   0    2    0",
+        
+        //RET //////////////////////////////////////////////////////////////////////////////  
+        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // EX + WB       
+        "26  SKIP            0    SRC2   0     0     0   0   0  0  15  0    0    0    0    0     1    0   0    2    0",
+        
+        //RETI //////////////////////////////////////////////////////////////////////////////  
+        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // EX + WB       
+        "27  SKIP            0    SRC2   0     0     0   0   0  0  15  0    0    0    0    0     1    0   0    2    0",
+        
+        
     
             
     };

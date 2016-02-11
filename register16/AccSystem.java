@@ -49,9 +49,9 @@ public class AccSystem {
             logger.info("Loading memory dump...");
             
             String abso_path = "C:\\Users\\nedve\\OneDrive\\School\\JCU\\1\\ArchitektPC\\netbeansPrj\\build\\classes\\register16\\";
-            //system.mem.loadFromBinaryFile(abso_path + "output.bin");
+            system.mem.loadFromBinaryFile(abso_path + "output.bin");
             //system.mem.loadFromBinaryFile(abso_path + "source.bin");
-            system.mem.loadFromBinaryFile(abso_path + "instrukce.bin");
+            //system.mem.loadFromBinaryFile(abso_path + "instrukce.bin");
             logger.info("Core run!");
             system.core.run();
             

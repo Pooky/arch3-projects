@@ -62,6 +62,7 @@ public class AccController extends MicroprogController {
 		// test
 		Register.write(1, (short)15);
 		Register.write(2, (short)2);
+                Register.write(15, (short)31);
 		//PC.setD((short)1);
 		//PC.clock();
 		
@@ -242,32 +243,70 @@ public class AccController extends MicroprogController {
 		java.lang.System.out.printf("Instruction code [%04x]\n", (short) IR.getQ());
             
 		// vezmeme pamět z instrukce (? co je to & 0xFFFF)
-	    switch (((short) IR.getQ() & 0xF0F0)) { // return = instrukce začíná na X řádku
-                //case 0b0100_0000_0000_0000: // 4000 to match the first instr in output.bin
+	    switch (((short) IR.getQ() & 0xFFFF)) { // return = instrukce začíná na X řádku
+                //case 0b0100_0000_0000_0000: // 4000 to match the 1st instr in output.bin
+                //case 0b1111_1111_1111_1111: // FFFF to match the 2nd instr in output.bin - halt
                 
                 // NOP
 	        case 0b0000_0000_0000_0000: // real 0000 0000 0000 0000
 	            return 2; 
                     
-                // ADD rd, rn
-                    case 0b0101_0000_0000_0000:
-                //case 0b0000_0000_0010_0000: // real 0000 dddd 0010 nnnn
+                // ADD rd, rn ; r1 += r2
+                case 0b0000_0001_0010_0010: // real 0000 dddd 0010 nnnn
 	            return 3;
                     
-                // SUB rd, rn
-                case 0b0000_0000_0100_0000: // real 0000 dddd 0010 nnnn
+                // SUB rd, rn ; r1 -= r2
+                case 0b0000_0001_0100_0010: // real 0000 dddd 0010 nnnn
 	            return 6;
                 
                 // HALT
-                case 0b1111_0000_1111_0000: // real 1111 1111 1111 1111
+                case 0b1111_1111_1111_1111: // real 1111 1111 1111 1111
 	            return 9;
                    
-                // NEG rd, rn
-                    case 0b0100_0000_0000_0000:
-                //case 0b0000_0000_0001_0000: // real 0000 dddd 0001 nnnn
+                // NEG rd, rn  ; r1 = -r2
+                case 0b0000_0001_0001_0010: // real 0000 dddd 0001 nnnn
 	            return 10;
                     
-//	        
+                // AND rd, rn  ; r1 = r1 & r2
+                case 0b0000_0001_1000_0010: // real 0000 dddd 1000 nnnn
+	            return 13;
+                        
+                // OR rd, rn  ; r1 = r1 | r2
+                case 0b0000_0001_1010_0010: // real 0000 dddd 1010 nnnn
+	            return 16;
+                        
+                // XOR rd, rn  ; r1 = r1 ^ r2
+                case 0b0000_0001_1100_0010: // real 0000 dddd 1100 nnnn
+	            return 19;
+                    
+                // NOT rd, rn  ; r1 = ~r2
+                case 0b0000_0001_1110_0010: // real 0000 dddd 1110 nnnn
+	            return 22;
+                    
+                // JMP [rn]  ; PC = r1
+                case 0b1111_0000_1100_0001: // real 1111 0000 1100 nnnn
+	            return 25;
+                    
+                // RET  ; PC = r15
+                case 0b1111_0000_1100_1111: // real 1111 0000 1100 1111
+	            return 26;
+                    
+                // RETI  ; PC = r15
+                case 0b0100_0000_0000_0000:
+                //case 0b1111_0001_1100_1111: // real 1111 0001 1100 1111
+	            return 27;
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
 //	        // LDA        
 //	        case 0x8000:
 //	            return 15;
