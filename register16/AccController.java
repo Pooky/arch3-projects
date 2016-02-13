@@ -26,7 +26,7 @@ public class AccController extends MicroprogController {
     private static Logger logger = Logger.getLogger(AccController.class.getName());
     
     /* Data paths */
-    private short ab; // adresová sběrnice
+    private short ab; // adresovĂˇ sbÄ›rnice
     private short db; 
     private short aluo;
     
@@ -80,7 +80,7 @@ public class AccController extends MicroprogController {
         short pcin = 0;
         
         
-        // adresová sběrnice
+        // adresovĂˇ sbÄ›rnice
         if(m.aboe){
         	 if(m.asel == 0){
         		 ab = PC.getQ();
@@ -98,9 +98,9 @@ public class AccController extends MicroprogController {
         
         //ab = (short) ((!m.aoe) ? 0xFFFF : (m.asel == 0) ? IR.getQ() : (m.asel == 1) ? PC.getQ() : 0x10);
         
-        // otevřený výstup z memory
+        // otevĹ™enĂ˝ vĂ˝stup z memory
         if (m.moe) {
-        	// otevřený výstup i z dboe = chyba
+        	// otevĹ™enĂ˝ vĂ˝stup i z dboe = chyba
             if (m.dboe) {
                 java.lang.System.out.printf(
                         "Error: bus conflict on DB (moe and dboe active simultaneously)\n");
@@ -109,7 +109,7 @@ public class AccController extends MicroprogController {
 
 
             try {
-                db = systemBus.read(ab, SystemBus.M_16); // načtení dat na datovou sběrnici
+                db = systemBus.read(ab, SystemBus.M_16); // naÄŤtenĂ­ dat na datovou sbÄ›rnici
             } catch (Exception ex) {
               System.out.println(ex.getMessage());
               System.out.println(ab);
@@ -128,7 +128,7 @@ public class AccController extends MicroprogController {
         		drd = aluo;
         		break;        		
         } 
-        // načtení prvního operandu
+        // naÄŤtenĂ­ prvnĂ­ho operandu
         switch (m.src1s) {
             case 0:
                 op1 = drm;
@@ -187,7 +187,7 @@ public class AccController extends MicroprogController {
         // PCIN
         pcin = (short)(pca + pcb);
         //System.out.println(pcin);
-        // znovu po zpracování aluo?
+        // znovu po zpracovĂˇnĂ­ aluo?
         if (m.asel == 2 && m.aboe) {
             ab = aluo;  
         }
@@ -205,7 +205,7 @@ public class AccController extends MicroprogController {
 	}
 
 	/**
-	 * Při vzestupné hraně
+	 * PĹ™i vzestupnĂ© hranÄ›
 	 */
 	protected void onRisingClockEdge(Microinstruction mi) {
 		
@@ -221,11 +221,11 @@ public class AccController extends MicroprogController {
             psw.clock();
         }
         
-        // zapsání do registru
+        // zapsĂˇnĂ­ do registru
         if(m.regw){
         	Register.write(m.rd, drd);
         } 
-        // zapsání memory
+        // zapsĂˇnĂ­ memory
         if (m.mwr) {
             try {
                 systemBus.write(ab, db, SystemBus.M_16);
@@ -242,8 +242,8 @@ public class AccController extends MicroprogController {
 		
 		java.lang.System.out.printf("Instruction code [%04x]\n", (short) IR.getQ());
             
-		// vezmeme pamět z instrukce (? co je to & 0xFFFF)
-	    switch (((short) IR.getQ() & 0xFFFF)) { // return = instrukce začíná na X řádku
+		// vezmeme pamÄ›t z instrukce (? co je to & 0xFFFF)
+	    switch (((short) IR.getQ() & 0xFFFF)) { // return = instrukce zaÄŤĂ­nĂˇ na X Ĺ™Ăˇdku
                 //case 0b0100_0000_0000_0000: // 4000 to match the 1st instr in output.bin
                 //case 0b1111_1111_1111_1111: // FFFF to match the 2nd instr in output.bin - halt
                 
@@ -290,22 +290,26 @@ public class AccController extends MicroprogController {
                 // RET  ; PC = r15
                 case 0b1111_0000_1100_1111: // real 1111 0000 1100 1111
 	            return 26;
-                    
+
                 // RETI  ; PC = r15
                 case 0b0100_0000_0000_0000:
                 //case 0b1111_0001_1100_1111: // real 1111 0001 1100 1111
 	            return 27;
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
+	            
+	            // LLDI rd, I rd←I
+                case 0b1110_0000_0000_0000:
+                return 50;
+                //case 0b1110_0000_0000_0000: // real 1110 0000 0000 0000        
+                
+                // LJMP A	pc←A
+                case 0b1110_0000_0001_0000:
+                return 60;
+                //case 0b1110_0000_0001_0000: // real 1110 0000 0001 0000        
+                 
+                //LCALL A	r15←pc, pc←A
+                case 0b1110_1111_0010_0000:
+                return 70;
+                //case 0b1110_1111_0010_0000: // real 1110 1111 0010 0000      
                         
 //	        // LDA        
 //	        case 0x8000:
