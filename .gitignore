@@ -1,1 +1,10 @@
 *.class
+instrukce.txt
+instrukce.bin
+str_arch/AccCore.java
+str_arch/AccMicrocode.java
+str_arch/AccMicroinstr.java
+str_arch/AccPSW.java
+str_arch/AccSystem.java
+.gitignore
+register16/AccSystem.java

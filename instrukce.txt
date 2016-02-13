@@ -1,23 +1,2 @@
 @2 ; two byte data entities
-:00000000       4000 0400 ; JMP 0x0400
-:00000002       5000 0000 ; 
-:00000004       C001 0000 ; interrupt entry point (dummy RET)
-:00000008       0000 0000 ; R1:R0
-                0000 0000 ; R3:R2
-                0000 0000 ; R5:R4
-                0000 0000 ; R7:R6
-:00000010       00F0 0000 ; FP:SP
-:00000080       FFFF 8000 ; data 0x80(5), 0x82(6)
-:000000E0       FFFF FFFF ; stack 
-                FFFF FFFF ; stack
-                FFFF FFFF ; stack
-                FFFF FFFF ; stack
-                FFFF FFFF ; stack
-                FFFF FFFF ; stack
-                FFFF FFFF ; stack
-                FFFF FFFF ; stack
-:00000400       8000 0080 ;  LDA 0x80       	
-		0200 0082 ;  ADD 0x82
-                4000 0420 ;  CALL 0x420
-:0000040C       4000 040C ;  JMP 0x40C
-:00000420       C001 0000 ;  RET, NOP
+:00000000       E000 0000;  
