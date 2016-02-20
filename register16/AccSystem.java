@@ -48,7 +48,7 @@ public class AccSystem {
             logger.info("\t#### Starting system.... ####");
             logger.info("Loading memory dump...");
             
-            system.mem.loadFromBinaryFile("C:\\Users\\IT\\workspace\\Arch3Git\\Source\\instrukce2.bin");
+            system.mem.loadFromBinaryFile("C:\\Users\\IT\\workspace\\Architektura3\\src\\sources\\instrukce2.bin");
             //system.mem.loadFromBinaryFile(abso_path + "source.bin");
             //system.mem.loadFromBinaryFile(abso_path + "instrukce.bin");
             logger.info("Core run!");
