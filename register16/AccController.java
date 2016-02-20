@@ -351,7 +351,7 @@ public class AccController extends MicroprogController {
     }
 
     /**
-     * SLDACC_PRINT This function prints all registers and control isgnals of
+     * SLDACC_PR INT This function prints all registers and control isgnals of
      * the processor.
      */
     void print(boolean header) {
