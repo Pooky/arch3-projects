@@ -35,6 +35,7 @@ public class AccController extends MicroprogController {
     /* Registers */
     private Reg16 PC = new Reg16();
     private Reg16 IR = new Reg16();
+    private Reg16 EX = new Reg16();
     
     private RegFile16 Register = new RegFile16(16);
 
@@ -48,6 +49,9 @@ public class AccController extends MicroprogController {
     }
     public Reg16 getIR(){
     	return IR;
+    }
+    public Reg16 getEX(){
+    	return EX;
     }
 	
     /**
@@ -86,7 +90,7 @@ public class AccController extends MicroprogController {
         		 ab = PC.getQ();
         	 }
         	 if(m.asel == 1){
-        		 ab = IR.getQ();
+        		 ab = EX.getQ();
         	 }
         	 if(m.asel == 2){
         		 ab = aluo;
@@ -143,7 +147,7 @@ public class AccController extends MicroprogController {
                 op2 = drn;
                 break;
             case 1:
-                op2 = IR.getQ(); // ignorujeme extender
+                op2 = EX.getQ(); 
                 break;
 
         }
@@ -174,7 +178,7 @@ public class AccController extends MicroprogController {
         		pca = aluo;
         		break;
         	case 3:
-        		pca = IR.getQ(); // ignorujeme extender
+        		pca = EX.getQ(); 
         		break;
         }
         // pcb
