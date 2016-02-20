@@ -1,7 +1,6 @@
 /**
  * @Author M.K.
  */
-
 package register16;
 
 import java.util.logging.Logger;
@@ -19,58 +18,63 @@ import generic.PSW;
 import generic.SystemBus;
 
 public class AccController extends MicroprogController {
-    
-	/* Busses */
-    Bus16x16 systemBus;   
-	
+
+    /* Busses */
+    Bus16x16 systemBus;
+
     private static Logger logger = Logger.getLogger(AccController.class.getName());
-    
+
     /* Data paths */
     private short ab; // adresovĂˇ sbÄ›rnice
-    private short db; 
+    private short db;
     private short aluo;
-    
+
     private short drd;
+    
+    private short rn;
+    private short rm;
 
     /* Registers */
     private Reg16 PC = new Reg16();
     private Reg16 IR = new Reg16();
-    
+
     private RegFile16 Register = new RegFile16(16);
 
     /* Functional Blocks */
     private final Alu16 alu = new Alu16();
-    
+
     private AccPSW psw = new AccPSW(); // flags
-    
-    public Reg16 getProgramCounter(){
-    	return PC;
+
+    public Reg16 getProgramCounter() {
+        return PC;
     }
-    public Reg16 getIR(){
-    	return IR;
+
+    public Reg16 getIR() {
+        return IR;
     }
-	
+
     /**
      * Constructor
+     *
      * @param microcode
      * @param psw
      */
-	public AccController(Microcode microcode, PSW psw, Bus16x16 systemBus) {
-		super(microcode, psw);
-		this.systemBus = systemBus;
-		// TODO Auto-generated constructor stub
-		// test
-		Register.write(1, (short)15);
-		Register.write(2, (short)2);
-        Register.write(15, (short)31);
-		//PC.setD((short)1);
-		//PC.clock();
-		
-	}
+    public AccController(Microcode microcode, PSW psw, Bus16x16 systemBus) {
+        super(microcode, psw);
+        this.systemBus = systemBus;
+            // TODO Auto-generated constructor stub
+        // test
+        Register.write(1, (short) 15);
+        Register.write(2, (short) 2);
+        Register.write(15, (short) 31);
+            //PC.setD((short)1);
+        //PC.clock();
 
-	@Override
-	protected void onLogic(Microinstruction mi) {
-		
+    }
+
+    @Override
+    protected void onLogic(Microinstruction mi) {
+
         AccMicroinstr m = (AccMicroinstr) mi;
         short op1 = 0, op2 = 0;
         short drm = 0;
@@ -79,55 +83,55 @@ public class AccController extends MicroprogController {
         short pcb = 0;
         short pcin = 0;
         //short irv = 0;
-        
+
         // adresovĂˇ sbÄ›rnice
-        if(m.aboe){
-        	 if(m.asel == 0){
-        		 ab = PC.getQ();
-        	 }
-        	 if(m.asel == 1){
-        		 ab = extender(IR.getQ(), m.extop);
-        	 }
-        	 if(m.asel == 2){
-        		 ab = aluo;
-        	 }
+        if (m.aboe) {
+            if (m.asel == 0) {
+                ab = PC.getQ();
+            }
+            if (m.asel == 1) {
+                ab = extender(IR.getQ(), m.extop);
+            }
+            if (m.asel == 2) {
+                ab = aluo;
+            }
         }
         // register files
-        drm = Register.read(m.rm);
-        drn = Register.read(m.rn);
-        
+        //drm = Register.read(m.rm);
+        //drn = Register.read(m.rn);
+        drm = Register.read(rm);
+        drn = Register.read(rn);
+
         //ab = (short) ((!m.aoe) ? 0xFFFF : (m.asel == 0) ? IR.getQ() : (m.asel == 1) ? PC.getQ() : 0x10);
-        
         // otevĹ™enĂ˝ vĂ˝stup z memory
         if (m.moe) {
-        	// otevĹ™enĂ˝ vĂ˝stup i z dboe = chyba
+            // otevĹ™enĂ˝ vĂ˝stup i z dboe = chyba
             if (m.dboe) {
                 java.lang.System.out.printf(
                         "Error: bus conflict on DB (moe and dboe active simultaneously)\n");
                 java.lang.System.exit(1);
             }
 
-
             try {
                 db = systemBus.read(ab, SystemBus.M_16); // naÄŤtenĂ­ dat na datovou sbÄ›rnici
             } catch (Exception ex) {
-              System.out.println(ex.getMessage());
-              System.out.println(ab);
-              System.exit(1);
+                System.out.println(ex.getMessage());
+                System.out.println(ab);
+                System.exit(1);
             }
         }
         // register drd
         switch (m.rdsel) {
-        	case 0:
-        		drd = db;
-        		break;
-        	case 1:
-        		drd = PC.getQ();
-        		break;
-        	case 2:
-        		drd = aluo;
-        		break;        		
-        } 
+            case 0:
+                drd = db;
+                break;
+            case 1:
+                drd = PC.getQ();
+                break;
+            case 2:
+                drd = aluo;
+                break;
+        }
         // naÄŤtenĂ­ prvnĂ­ho operandu
         switch (m.src1s) {
             case 0:
@@ -143,7 +147,7 @@ public class AccController extends MicroprogController {
                 op2 = drn;
                 break;
             case 1:
-                op2 = extender(IR.getQ(), m.extop); 
+                op2 = extender(IR.getQ(), m.extop);
                 break;
 
         }
@@ -157,60 +161,59 @@ public class AccController extends MicroprogController {
         } else if (!m.moe) {
             db = (short) 0xFFFF;
         }
-        
-        if(m.dboe){
-        	db = drd;
-        }  
-        
+
+        if (m.dboe) {
+            db = drd;
+        }
+
         // pcas
-        switch(m.pcas){
-        	case 0:
-        		pca = 2; // konstanta
-        		break;
-        	case 1:
-        		pca = db;
-        		break;
-        	case 2:
-        		pca = aluo;
-        		break;
-        	case 3:
-        		pca = extender(IR.getQ(), m.extop);
-        		break;
+        switch (m.pcas) {
+            case 0:
+                pca = 2; // konstanta
+                break;
+            case 1:
+                pca = db;
+                break;
+            case 2:
+                pca = aluo;
+                break;
+            case 3:
+                pca = extender(IR.getQ(), m.extop);
+                break;
         }
         // pcb
-        if(m.pcbs == 1){
-        	pcb = PC.getQ();
-        }else{
-        	pcb = 0;
+        if (m.pcbs == 1) {
+            pcb = PC.getQ();
+        } else {
+            pcb = 0;
         }
         //System.out.println(pcb);
         // PCIN
-        pcin = (short)(pca + pcb);
+        pcin = (short) (pca + pcb);
         //System.out.println(pcin);
         // znovu po zpracovĂˇnĂ­ aluo?
         if (m.asel == 2 && m.aboe) {
-            ab = aluo;  
+            ab = aluo;
         }
-     
 
         // BUSes -> Registers
         IR.setD(db);
         PC.setD(pcin);
-        
+
         if (getState() == 0) {
             print(true);
         }
         print(false);
-		
-	}
 
-	/**
-	 * PĹ™i vzestupnĂ© hranÄ›
-	 */
-	protected void onRisingClockEdge(Microinstruction mi) {
-		
-		AccMicroinstr m = (AccMicroinstr) mi;
-		
+    }
+
+    /**
+     * PĹ™i vzestupnĂ© hranÄ›
+     */
+    protected void onRisingClockEdge(Microinstruction mi) {
+
+        AccMicroinstr m = (AccMicroinstr) mi;
+
         if (m.pcwr) {
             PC.clock();
         }
@@ -220,11 +223,11 @@ public class AccController extends MicroprogController {
         if (m.psww) {
             psw.clock();
         }
-        
+
         // zapsĂˇnĂ­ do registru
-        if(m.regw){
-        	Register.write(m.rd, drd);
-        } 
+        if (m.regw) {
+            Register.write(m.rd, drd);
+        }
         // zapsĂˇnĂ­ memory
         if (m.mwr) {
             try {
@@ -234,129 +237,131 @@ public class AccController extends MicroprogController {
                 System.exit(1);
             }
         }
-		
-	}
 
-	@Override
-	protected int onDecodeInstruction() {
-		
-		java.lang.System.out.printf("Instruction code [%04x]\n", (short) IR.getQ());
-            
-		// vezmeme pamÄ›t z instrukce (? co je to & 0xFFFF)
-	    switch (((short) IR.getQ() & 0xFFFF)) { // return = instrukce zaÄŤĂ­nĂˇ na X Ĺ™Ăˇdku
-                //case 0b0100_0000_0000_0000: // 4000 to match the 1st instr in output.bin
-                //case 0b1111_1111_1111_1111: // FFFF to match the 2nd instr in output.bin - halt
-                
-                // NOP
-	        case 0b0000_0000_0000_0000: // real 0000 0000 0000 0000
-	            return 2; 
-                    
-                // ADD rd, rn ; r1 += r2
-                case 0b0000_0001_0010_0010: // real 0000 dddd 0010 nnnn
-	            return 3;
-                    
-                // SUB rd, rn ; r1 -= r2
-                case 0b0000_0001_0100_0010: // real 0000 dddd 0010 nnnn
-	            return 6;
-                
-                // HALT
-                case 0b1111_1111_1111_1111: // real 1111 1111 1111 1111
-	            return 9;
-                   
-                // NEG rd, rn  ; r1 = -r2
-                case 0b0000_0001_0001_0010: // real 0000 dddd 0001 nnnn
-	            return 10;
-                    
-                // AND rd, rn  ; r1 = r1 & r2
-                case 0b0000_0001_1000_0010: // real 0000 dddd 1000 nnnn
-	            return 13;
-                        
-                // OR rd, rn  ; r1 = r1 | r2
-                case 0b0000_0001_1010_0010: // real 0000 dddd 1010 nnnn
-	            return 16;
-                        
-                // XOR rd, rn  ; r1 = r1 ^ r2
-                case 0b0000_0001_1100_0010: // real 0000 dddd 1100 nnnn
-	            return 19;
-                    
-                // NOT rd, rn  ; r1 = ~r2
-                case 0b0000_0001_1110_0010: // real 0000 dddd 1110 nnnn
-	            return 22;
-                    
-                // JMP [rn]  ; PC = r1
-                case 0b1111_0000_1100_0001: // real 1111 0000 1100 nnnn
-	            return 25;
-                    
-                // RET  ; PC = r15
-                case 0b1111_0000_1100_1111: // real 1111 0000 1100 1111
-	            return 26;
+    }
 
-                // RETI  ; PC = r15
-                case 0b0100_0000_0000_0000:
+    @Override
+    protected int onDecodeInstruction() {
+
+        java.lang.System.out.printf("Instruction code [%04x]\n", (short) IR.getQ());
+
+        switch (((short) IR.getQ() & 0xFFFF)) { // return = instrukce zaÄŤĂ­nĂˇ na X Ĺ™Ăˇdku
+            // NOP
+            case 0b0000_0000_0000_0000: // real 0000 0000 0000 0000
+                return 2;
+
+            // HALT
+            case 0b1111_1111_1111_1111: // real 1111 1111 1111 1111
+                return 9;
+                
+            // RET  ; PC = r15
+            case 0b1111_0000_1100_1111: // real 1111 0000 1100 1111
+                return 26;
+
+            // RETI  ; PC = r15
+            case 0b0100_0000_0000_0000:
                 //case 0b1111_0001_1100_1111: // real 1111 0001 1100 1111
-	            return 27;
-	            
-	            // LLDI rd, I rd←I
-                case 0b1110_0000_0000_0000:
-                return 50;
-                //case 0b1110_0000_0000_0000: // real 1110 0000 0000 0000        
+                return 27;
+
+        }
+        
+        switch (((short) IR.getQ() & 0xF0F0)) { // return = instrukce zaÄŤĂ­nĂˇ na X Ĺ™Ăˇdku
+            // ADD rd, rn ; rm += rn
+            case 0b0000_0000_0010_0000: // real 0000 dddd 0010 nnnn
+                rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
+                return 3;
+
+            // SUB rd, rn ; rm -= rn
+            case 0b0000_0000_0100_0000: // real 0000 dddd 0010 nnnn
+                rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
+                return 6;
                 
-                // LJMP A	pc←A
-                case 0b1110_0000_0001_0000:
-                return 60;
-                //case 0b1110_0000_0001_0000: // real 1110 0000 0001 0000        
-                 
-                //LCALL A	r15←pc, pc←A
-                case 0b1110_1111_0010_0000:
-                return 70;
-                //case 0b1110_1111_0010_0000: // real 1110 1111 0010 0000      
-                        
-//	        // LDA        
-//	        case 0x8000:
-//	            return 15;
-//	        // ADD        
-//	        case 0x0200:
-//	            return 20;
-//	        // CALL        
-//	        case 0xc000:
-//	            return 25;
-//	        // RET
-//	        case 0xc001:
-//	            return 35;
-	        default:
-	            java.lang.System.out.printf("Error: unknown instruction code [%04x]\n", (int) IR.getQ());
-	            java.lang.System.exit(1);
-	    }
-	    
-	    return 0;
-	}
+            // NEG rd, rn  ; rm = -rn
+            case 0b0000_0000_0001_0000: // real 0000 dddd 0001 nnnn
+                rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
+                return 10;
 
-	@Override
-	public void run() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+            // AND rd, rn  ; rm = rm & rn
+            case 0b0000_0000_1000_0000: // real 0000 dddd 1000 nnnn
+                rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
+                return 13;
 
-	@Override
-	public void cycle() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+            // OR rd, rn  ; rm = rm | rn
+            case 0b0000_0000_1010_0000: // real 0000 dddd 1010 nnnn
+                rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
+                return 16;
 
-	@Override
-	public void stop() {
+            // XOR rd, rn  ; rm = rm ^ rn
+            case 0b0000_0000_1100_0000: // real 0000 dddd 1100 nnnn
+                rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
+                return 19;
+
+            // NOT rd, rn  ; rm = ~rn
+            case 0b0000_0000_1110_0000: // real 0000 dddd 1110 nnnn
+                rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
+                return 22;
+
+            // JMP [rn]  ; PC = rm
+            case 0b1111_0000_1100_0000: // real 1111 0000 1100 nnnn
+                rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
+                return 25;
+
+            
+
+//            // LLDI rd, I rd‹I
+//            case 0b1110_0000_0000_0000:
+//                return 50;
+//                //case 0b1110_0000_0000_0000: // real 1110 0000 0000 0000        
+//
+//            // LJMP A	pc‹A
+//            case 0b1110_0000_0001_0000:
+//                return 60;
+//                //case 0b1110_0000_0001_0000: // real 1110 0000 0001 0000        
+//
+//            //LCALL A	r15‹pc, pc‹A
+//            case 0b1110_1111_0010_0000:
+//                return 70;
+//                //case 0b1110_1111_0010_0000: // real 1110 1111 0010 0000      
+                
+        }
+        
+        //neproslo to ani jednim switchem
+        java.lang.System.out.printf("Error: unknown instruction code [%04x]\n", (int) IR.getQ());
+        java.lang.System.exit(1);
+        return 0;
+    }
+
+    @Override
+    public void run() throws Exception {
 		// TODO Auto-generated method stub
-		
-	}
-	
-	
+
+    }
+
+    @Override
+    public void cycle() throws Exception {
+		// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void stop() {
+		// TODO Auto-generated method stub
+
+    }
 
     /**
      * SLDACC_PRINT This function prints all registers and control isgnals of
      * the processor.
      */
     void print(boolean header) {
-    	//state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        //state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
         AccMicroinstr m = (AccMicroinstr) this.getCurrentMicroinstruction();
 
         if (header) {
@@ -426,10 +431,10 @@ public class AccController extends MicroprogController {
             System.out.printf("%1d \t", Register.read(2));
         }
         /*if (header) {
-            System.out.printf("r \t");
-        } else {
-            System.out.printf("%1d \t", Register.read(2));
-        }*/
+         System.out.printf("r \t");
+         } else {
+         System.out.printf("%1d \t", Register.read(2));
+         }*/
         if (header) {
             System.out.printf("drd \t");
         } else {
@@ -486,50 +491,50 @@ public class AccController extends MicroprogController {
             System.out.printf("%04X    ", extender(IR.getQ(), m.extop));
         }
         System.out.println();
-    }	
+    }
 
-    public short extender(short instruction, int extop){
-    	short tmp;
-    	switch (extop){
+    public short extender(short instruction, int extop) {
+        short tmp;
+        switch (extop) {
             case 0b000: // xxxxxxxxxxxxuuuu -> 000000000000uuuu
-                tmp = (short)(instruction & 0b0000_0000_0000_1111);
+                tmp = (short) (instruction & 0b0000_0000_0000_1111);
                 return tmp;
-                
+
             case 0b001: // xxxxxxxxxxxsvvvv -> ssssssssssssvvvv
                 tmp = (short) (instruction & 0b0000_0000_0001_1111);
                 tmp = (short) (tmp << 11);
                 tmp = (short) (tmp >> 11);
                 return tmp;
-                
+
             case 0b010: // xxxxxxxxxxsvvvvv -> sssssssssssvvvvv
                 tmp = (short) (instruction & 0b0000_0000_0011_1111);
                 tmp = (short) (tmp << 10);
                 tmp = (short) (tmp >> 10);
                 return tmp;
-                
+
             case 0b011: // xxxxxxxxsvvvvvvv -> sssssssssvvvvvvv
                 tmp = (short) (instruction & 0b0000_0000_1111_1111);
                 tmp = (short) (tmp << 8);
                 tmp = (short) (tmp >> 8);
                 return tmp;
-                
+
             case 0b100: // xxxxxxxxuuuuuuuu -> 0000000uuuuuuuu0
                 tmp = (short) (instruction & 0b0000_0000_1111_1111);
                 tmp = (short) (tmp << 1);
                 return tmp;
-                
+
             case 0b101: // xxxxxxxxsvvvvvvv -> ssssssssvvvvvvv0
                 tmp = (short) (instruction & 0b0000_0000_1111_1111);
                 tmp = (short) (tmp << 8);
                 tmp = (short) (tmp >> 8);
                 tmp = (short) (tmp << 1);
                 return tmp;
-                
+
             case 0b110: // xxxxuuuuuuuuuuuu -> 000uuuuuuuuuuuu0
                 tmp = (short) (instruction & 0b0000_1111_1111_1111);
                 tmp = (short) (tmp << 1);
                 return tmp;
-                
+
             case 0b111: // xxxxsvvvvvvvvvvv -> ssssvvvvvvvvvvv0
                 tmp = (short) (instruction & 0b0000_1111_1111_1111);
                 tmp = (short) (tmp << 4);
@@ -537,8 +542,27 @@ public class AccController extends MicroprogController {
                 tmp = (short) (tmp << 1);
                 return tmp;
         }
-    	
-		return instruction;
-    	
+
+        return instruction;
+
+    }
+    
+    public short getRegistrNumberFromInstruction(short instruction, short whichQuadrant){
+        short tmp;
+        switch (whichQuadrant){
+            case 1: // VVVV xxxx xxxx xxxx -> 0000 0000 0000 VVVV
+                return (short) (instruction >>> 12);
+            case 2: // xxxx VVVV xxxx xxxx -> 0000 0000 0000 VVVV
+                tmp = instruction;
+                tmp = (short) (tmp << 4);
+                return (short) (tmp >>> 12);
+            case 3: // xxxx xxxx VVVV xxxx -> 0000 0000 0000 VVVV
+                tmp = instruction;
+                tmp = (short) (tmp << 8);
+                return (short) (tmp >>> 12);   
+            case 4: // xxxx xxxx xxxx VVVV -> 0000 0000 0000 VVVV
+                return (short) (instruction & 0b0000_0000_0000_1111);  
+        }
+        return (short) 0xFFFF;
     }
 }
