@@ -259,9 +259,20 @@ public class AccController extends MicroprogController {
                 return 26;
 
             // RETI  ; PC = r15
-            case 0b0100_0000_0000_0000:
-                //case 0b1111_0001_1100_1111: // real 1111 0001 1100 1111
+            case 0b1111_0001_1100_1111: // real 1111 0001 1100 1111
                 return 27;
+                
+            // LLDI rd, I rd ‹ I
+            case 0b1110_0000_0000_0000: // real 1110 0000 0000 0000        
+                return 50;
+
+            // LJMP A	pc ‹ A
+            case 0b1110_0000_0001_0000: // real 1110 0000 0001 0000
+                return 60;     
+
+            //LCALL A	r15 ‹ pc, pc ‹ A
+            case 0b1110_1111_0010_0000: // real 1110 1111 0010 0000  
+                return 70;
 
         }
         
@@ -311,24 +322,7 @@ public class AccController extends MicroprogController {
             // JMP [rn]  ; PC = rm
             case 0b1111_0000_1100_0000: // real 1111 0000 1100 nnnn
                 rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
-                return 25;
-
-            
-
-//            // LLDI rd, I rd‹I
-//            case 0b1110_0000_0000_0000:
-//                return 50;
-//                //case 0b1110_0000_0000_0000: // real 1110 0000 0000 0000        
-//
-//            // LJMP A	pc‹A
-//            case 0b1110_0000_0001_0000:
-//                return 60;
-//                //case 0b1110_0000_0001_0000: // real 1110 0000 0001 0000        
-//
-//            //LCALL A	r15‹pc, pc‹A
-//            case 0b1110_1111_0010_0000:
-//                return 70;
-//                //case 0b1110_1111_0010_0000: // real 1110 1111 0010 0000      
+                return 25;    
                 
         }
         
