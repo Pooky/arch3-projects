@@ -438,7 +438,7 @@ public class AccController extends MicroprogController {
         if (header) {
             System.out.printf("src1s ");
         } else {
-            System.out.printf("%1d     ", m.src1s);
+            System.out.printf("    %1d     ", m.src1s);
         }
         if (header) {
             System.out.printf("src2s ");

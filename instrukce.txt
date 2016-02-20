@@ -1,2 +1,0 @@
-@2 ; two byte data entities
-:00000000       E000 0000;  

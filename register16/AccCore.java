@@ -39,7 +39,7 @@ public class AccCore extends Core {
     String[] mc = new String[]{
         // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
         // IF + ID
-        "0  NEXT            0    NOP   0     0     1   0   0  0  0  0    0    1    1    0     0    1   0    0    0",
+        "0  NEXT            0    NOP   0     0     1   0   0  0  0  0    0    1    0    0     1    1   0    0    1",
         "1  SKIP_BY_DECODER 0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0",
         
         
@@ -54,18 +54,14 @@ public class AccCore extends Core {
         // EX        
         "3  NEXT            0    ADD   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
         // WB
-        "4  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
-        // PC++ AND SKIP
-        "5  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        "4  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         
         
         //SUB rd, rn //////////////////////////////////////////////////////////////////////////////  
         // EX        
         "6  NEXT            0    SUB   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
         // WB
-        "7  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
-        // PC++ AND SKIP
-        "8  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        "7  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         
         // HALT //////////////////////////////////////////////////////////////////////////////  
         "9  HALT           0   NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0",
@@ -74,42 +70,32 @@ public class AccCore extends Core {
         // EX        
         "10  NEXT            0    NEG   0     0     0   0   0  2  0  0    0    0    0    0     0    0   0    0    0",
         // WB
-        "11  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
-        // PC++ AND SKIP
-        "12  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        "11  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         
         //AND rd, rn //////////////////////////////////////////////////////////////////////////////  
         // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
         // EX        
         "13  NEXT            0    AND   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
         // WB
-        "14  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
-        // PC++ AND SKIP
-        "15  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        "14  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         
         //OR rd, rn //////////////////////////////////////////////////////////////////////////////  
         // EX        
         "16  NEXT            0    OR   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
         // WB
-        "17  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
-        // PC++ AND SKIP
-        "18  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        "17  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         
         //XOR rd, rn //////////////////////////////////////////////////////////////////////////////  
         // EX        
         "19  NEXT            0    XOR   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0",
         // WB
-        "20  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
-        // PC++ AND SKIP
-        "21  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        "20  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         
         //NOT rd, rn //////////////////////////////////////////////////////////////////////////////  
         // EX        
         "22  NEXT            0    CPL   0     0     0   0   0  2  0  0    0    0    0    0     0    0   0    0    0",
         // WB
-        "23  NEXT            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
-        // PC++ AND SKIP
-        "24  SKIP           0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        "23  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         
         //JMP [rn] //////////////////////////////////////////////////////////////////////////////  
         // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
@@ -131,9 +117,7 @@ public class AccCore extends Core {
         // EX
         "50 NEXT            0    SRC2  0     1     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0",
         // WB
-        "51 NEXT            0    NOP   0     1     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
-        // PC++ AND SKIP
-        "52 SKIP            0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1",
+        "51 SKIP            0    NOP   0     1     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0",
         
         //// LJMP /////////////////////////////////////////////////////////////////////////////
         // EX + WB        
