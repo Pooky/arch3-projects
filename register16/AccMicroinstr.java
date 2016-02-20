@@ -40,6 +40,7 @@ import generic.Microinstruction;
  * extop - implementov�no LP
  * pcbs  - implementov�no LP
  * pcwr - implementov�no LP
+ * extop - implementov�no LP
  * */
 
 public class AccMicroinstr extends Microinstruction {
@@ -65,6 +66,7 @@ public class AccMicroinstr extends Microinstruction {
     int rdsel;
     int pcas;
     int pcbs;
+    int extop;
 
     
     public AccMicroinstr(
@@ -90,12 +92,12 @@ public class AccMicroinstr extends Microinstruction {
     int rd,
     int rm,
     boolean m,
-    boolean extop,
     int psel,
     int rdsel,
     int pcas,
     int pcbs,
-    int pswsel) {
+    int pswsel,
+    int extop) {
         this.cond = cond;
         this.targetState = targetState;
         this.aluop = aluop;
@@ -114,6 +116,7 @@ public class AccMicroinstr extends Microinstruction {
         this.rdsel = rdsel;
         this.pcas = pcas;
         this.pcbs = pcbs;
+        this.extop = extop;
     }
 
     AccMicroinstr() {
@@ -125,7 +128,7 @@ public class AccMicroinstr extends Microinstruction {
         
         System.out.println(Arrays.toString(token));
         System.out.println(token.length);
-        //state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        //state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs extop
         
         int idx = 0;
         if (token[0].equals("")) {
@@ -152,7 +155,7 @@ public class AccMicroinstr extends Microinstruction {
         psww = !token[idx++].equals("0");
         pcas = Integer.parseInt(token[idx++]);
         pcbs = Integer.parseInt(token[idx++]);
-        
+        extop = Integer.parseInt(token[idx++]);
         return state;
     } 
    

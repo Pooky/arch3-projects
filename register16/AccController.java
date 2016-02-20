@@ -35,7 +35,6 @@ public class AccController extends MicroprogController {
     /* Registers */
     private Reg16 PC = new Reg16();
     private Reg16 IR = new Reg16();
-    private Reg16 EX = new Reg16();
     
     private RegFile16 Register = new RegFile16(16);
 
@@ -50,9 +49,6 @@ public class AccController extends MicroprogController {
     public Reg16 getIR(){
     	return IR;
     }
-    public Reg16 getEX(){
-    	return EX;
-    }
 	
     /**
      * Constructor
@@ -66,7 +62,7 @@ public class AccController extends MicroprogController {
 		// test
 		Register.write(1, (short)15);
 		Register.write(2, (short)2);
-                Register.write(15, (short)31);
+        Register.write(15, (short)31);
 		//PC.setD((short)1);
 		//PC.clock();
 		
@@ -82,7 +78,7 @@ public class AccController extends MicroprogController {
         short pca = 0;
         short pcb = 0;
         short pcin = 0;
-        
+        //short irv = 0;
         
         // adresovĂˇ sbÄ›rnice
         if(m.aboe){
@@ -90,7 +86,7 @@ public class AccController extends MicroprogController {
         		 ab = PC.getQ();
         	 }
         	 if(m.asel == 1){
-        		 ab = EX.getQ();
+        		 ab = extender(IR.getQ(), m.extop);
         	 }
         	 if(m.asel == 2){
         		 ab = aluo;
@@ -147,7 +143,7 @@ public class AccController extends MicroprogController {
                 op2 = drn;
                 break;
             case 1:
-                op2 = EX.getQ(); 
+                op2 = extender(IR.getQ(), m.extop); 
                 break;
 
         }
@@ -178,7 +174,7 @@ public class AccController extends MicroprogController {
         		pca = aluo;
         		break;
         	case 3:
-        		pca = EX.getQ(); 
+        		pca = extender(IR.getQ(), m.extop);
         		break;
         }
         // pcb
@@ -478,6 +474,16 @@ public class AccController extends MicroprogController {
             System.out.printf("psww   ");
         } else {
             System.out.printf("%d      ", (m.psww) ? 1 : 0);
+        }
+        if (header) {
+            System.out.printf("extop   ");
+        } else {
+            System.out.printf("%d      ", (m.extop));
+        }
+        if (header) {
+            System.out.printf("EX v   ");
+        } else {
+            System.out.printf("%04X    ", extender(IR.getQ(), m.extop));
         }
         System.out.println();
     }	
