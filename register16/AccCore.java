@@ -73,7 +73,7 @@ public class AccCore extends Core {
         "11  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0    0    ",
         
         //AND rd, rn //////////////////////////////////////////////////////////////////////////////  
-        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs extop
         // EX        
         "13  NEXT            0    AND   0     0     0   0   0  1  2  0    0    0    0    0     0    0   0    0    0    0    ",
         // WB
@@ -98,26 +98,30 @@ public class AccCore extends Core {
         "23  SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0    0    ",
         
         //JMP [rn] //////////////////////////////////////////////////////////////////////////////  
-        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // state    cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs extop
         // EX + WB        
         "25  SKIP            0    SRC2   0     0     0   0   0  0  1  0    0    0    0    0     1    0   0    2    0    0    ",
         
         //RET //////////////////////////////////////////////////////////////////////////////  
-        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // state    cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs extop
         // EX + WB       
         "26  SKIP            0    SRC2   0     0     0   0   0  0  15  0    0    0    0    0     1    0   0    2    0    0    ",
         
         //RETI //////////////////////////////////////////////////////////////////////////////  
-        // state  cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs
+        // state    cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs extop
         // EX + WB       
         "27  SKIP            0    SRC2   0     0     0   0   0  0  15  0    0    0    0    0     1    0   0    2    0    0    ",
         
         
         //// LLDI /////////////////////////////////////////////////////////////////////////////
-        // EX
-        "50 NEXT            0    SRC2  0     1     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0    0    ",
+        // EX = PC++(50);
+     // state    cond skip/next aluop src1s src2s moe mwr rd rm rn regw dboe aboe asel rdsel pcwr irw psww pcas pcbs extop
+        "50 NEXT            0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     1    0   0    0    1    0    ",
+        "51 NEXT            0    NOP   0     0     0   0   0  0  0  0    0    0    0    0     0    0   0    0    0    0    ",
         // WB
-        "51 SKIP            0    NOP   0     1     0   0   1  0  0  1    0    0    0    2     0    0   0    0    0    0    ",
+        "52 NEXT            0    NOP   0     0     1   0   1  0  0  1    0    0    0    0     0    0   0    0    0    0    ",
+        "53 SKIP            0    NOP   0     0     0   0   1  0  0  1    0    0    0    0     0    0   0    0    0    0    ",
+                
         
         //// LJMP /////////////////////////////////////////////////////////////////////////////
         // EX + WB        

@@ -1,4 +1,4 @@
 @2 ; two byte data entities
-:00000000       0122 0000; ADD
+:00000000       0221 0000; ADD
 :00000002       0142 0000; SUB
 :00000004       FFFF FFFF; HALT

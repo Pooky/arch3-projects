@@ -33,6 +33,7 @@ public class AccController extends MicroprogController {
     
     private short rn;
     private short rm;
+    private short rd;
 
     /* Registers */
     private Reg16 PC = new Reg16();
@@ -226,7 +227,7 @@ public class AccController extends MicroprogController {
 
         // zapsĂˇnĂ­ do registru
         if (m.regw) {
-            Register.write(m.rd, drd);
+            Register.write(rd, drd);
         }
         // zapsĂˇnĂ­ memory
         if (m.mwr) {
@@ -262,10 +263,6 @@ public class AccController extends MicroprogController {
             case 0b1111_0001_1100_1111: // real 1111 0001 1100 1111
                 return 27;
                 
-            // LLDI rd, I rd ‹ I
-            case 0b1110_0000_0000_0000: // real 1110 0000 0000 0000        
-                return 50;
-
             // LJMP A	pc ‹ A
             case 0b1110_0000_0001_0000: // real 1110 0000 0001 0000
                 return 60;     
@@ -276,46 +273,64 @@ public class AccController extends MicroprogController {
 
         }
         
+        switch (((short) IR.getQ() & 0xF0FF)) { // return = instrukce zaÄŤĂ­nĂˇ na X Ĺ™Ăˇdku
+        
+            
+        // LLDI rd, I rd ‹ I
+        case 0b1110_0000_0000_0000: // real 1110 0000 0000 0000
+        	 rd = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+            return 50;
+
+
+    }
+        
         switch (((short) IR.getQ() & 0xF0F0)) { // return = instrukce zaÄŤĂ­nĂˇ na X Ĺ™Ăˇdku
             // ADD rd, rn ; rm += rn
             case 0b0000_0000_0010_0000: // real 0000 dddd 0010 nnnn
                 rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rd = rm;
                 rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
                 return 3;
 
             // SUB rd, rn ; rm -= rn
             case 0b0000_0000_0100_0000: // real 0000 dddd 0010 nnnn
                 rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rd = rm;
                 rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
                 return 6;
                 
             // NEG rd, rn  ; rm = -rn
             case 0b0000_0000_0001_0000: // real 0000 dddd 0001 nnnn
                 rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rd = rm;
                 rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
                 return 10;
 
             // AND rd, rn  ; rm = rm & rn
             case 0b0000_0000_1000_0000: // real 0000 dddd 1000 nnnn
                 rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rd = rm;
                 rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
                 return 13;
 
             // OR rd, rn  ; rm = rm | rn
             case 0b0000_0000_1010_0000: // real 0000 dddd 1010 nnnn
                 rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rd = rm;
                 rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
                 return 16;
 
             // XOR rd, rn  ; rm = rm ^ rn
             case 0b0000_0000_1100_0000: // real 0000 dddd 1100 nnnn
                 rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rd = rm;
                 rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
                 return 19;
 
             // NOT rd, rn  ; rm = ~rn
             case 0b0000_0000_1110_0000: // real 0000 dddd 1110 nnnn
                 rm = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 2);
+                rd = rm;
                 rn = getRegistrNumberFromInstruction((short) IR.getQ(), (short) 4);
                 return 22;
 
